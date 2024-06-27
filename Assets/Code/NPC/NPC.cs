@@ -1,19 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NPC : MonoBehaviour
 {
     private DialogueTrigger dialogueTrigger;
     private Dialogue dialogue;
-    private bool playerInRange= false;
+    private bool playerInRange = false;
     private QuestUIManager questUIManager;
+    private DialogueManager dialogueManager;
+
     void Start()
     {
         dialogueTrigger = GetComponent<DialogueTrigger>();
         dialogue = GetComponent<Dialogue>();
-        questUIManager = FindAnyObjectByType<QuestUIManager>();
-        
+        questUIManager = FindObjectOfType<QuestUIManager>(); 
+        dialogueManager = FindObjectOfType<DialogueManager>();
+        dialogueManager.OnDialogueEnd += GiveQuestToPlayer;
     }
 
     void Update()
@@ -21,13 +22,10 @@ public class NPC : MonoBehaviour
         if (Vector3.Distance(transform.position, PlayerController.Instance.transform.position) < 3f)
         {
             playerInRange = true;
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) && !dialogue.questGiven)
             {
                 dialogueTrigger.TriggerDialogue();
-                if (!dialogue.questGiven)
-                {
-                    GiveQuestToPlayer();
-                }
+                dialogueManager.StartDialogue(dialogue); 
             }
         }
         else
@@ -38,10 +36,15 @@ public class NPC : MonoBehaviour
 
     private void GiveQuestToPlayer()
     {
-        dialogue.questGiven = true;
-        Debug.Log($"Quest Given: {dialogue.questDescription}");
-        questUIManager.ShowQuest(dialogue.questDescription);
+        if (!dialogue.questGiven)
+        {
+            dialogue.questGiven = true;
+            Debug.Log($"Quest Given: {dialogue.questDescription}");
 
+            string questSummary = dialogue.GetQuestSummary();
+            questUIManager.ShowQuestSummary(questSummary);
+            //questUIManager.ShowQuest(dialogue.questDescription);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -49,7 +52,6 @@ public class NPC : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = true;
-            // Optionally, display UI prompt to press 'E' to interact
         }
     }
 
@@ -58,6 +60,15 @@ public class NPC : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInRange = false;
+        }
+    }
+
+    void OnDestroy()
+    {
+        // Unsubscribe to avoid memory leaks
+        if (dialogueManager != null)
+        {
+            dialogueManager.OnDialogueEnd -= GiveQuestToPlayer;
         }
     }
 }

@@ -22,6 +22,18 @@ public class QuestUIManager : MonoBehaviour
         questPanel.SetActive(true);
     }
 
+    public void ShowQuestSummary(string questSummary)
+    {
+        Debug.Log("ShowQuestSummary called: " + questSummary);
+        questDescriptionText.text = questSummary;
+        questPanel.SetActive(true);
+    }
+    public void UpdateQuestSummary(string questSummary)
+    {
+        Debug.Log("UpdateQuestSummary called: " + questSummary);
+        questDescriptionText.text = questSummary;
+    }
+
     public void HideQuest()
     {
         Debug.Log("HideQuest called.");
