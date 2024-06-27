@@ -46,6 +46,25 @@ public class NPC : MonoBehaviour
             //questUIManager.ShowQuest(dialogue.questDescription);
         }
     }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            PlayerController playerController = other.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                Debug.Log("Player interacted with NPC. Assigning quest...");
+                playerController.SetCurrentQuest(dialogue);
+                dialogue.TriggerDialogue();
+                Debug.Log("Quest assigned to player.");
+            }
+            else
+            {
+                Debug.LogError("PlayerController not found on the interacting object.");
+            }
+        }
+    }
+
 
     private void OnTriggerEnter(Collider other)
     {

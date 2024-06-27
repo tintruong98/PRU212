@@ -40,5 +40,8 @@ public class Dialogue : MonoBehaviour
     {
         OnDialogueComplete?.Invoke();
         currentSentence = 0; // Reset for next dialogue
+        questGiven = true; // Ensure questGiven is set to true
+        Debug.Log("Quest given is now true.");
     }
+
 }
