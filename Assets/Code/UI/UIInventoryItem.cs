@@ -37,10 +37,11 @@ public class UIInventoryItem : MonoBehaviour
         borderImage.enabled = false;
     }
 
-    public void SetData(Sprite itemSprite)
+    public void SetData(Sprite itemSprite, int quantity)
     {
-        this.itemImage.sprite = itemSprite;
         this.itemImage.gameObject.SetActive(true);
+        this.itemImage.sprite = itemSprite; 
+        this.quantitytxt.text = quantity + "";
         this.empty = false;
     }
 
