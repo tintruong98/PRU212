@@ -26,7 +26,7 @@ namespace Inventory
 		public void Start()
 		{
 			PrepareUI();
-			//inventoryData.Initialize();
+			PrepareInventoryData();
 		}
 		private void PrepareInventoryData()
 		{
