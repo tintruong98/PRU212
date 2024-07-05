@@ -6,6 +6,9 @@ public class PlayerController : Singleton<PlayerController>
 {
     public bool FacingLeft { get { return facingLeft; } }
 
+    public Dialogue currentQuest;
+    private QuestUIManager questUIManager;
+    private Letter nearbyLetter;
 
     [SerializeField] private float moveSpeed = 1f;
     [SerializeField] private float dashSpeed = 4f;
@@ -39,6 +42,8 @@ public class PlayerController : Singleton<PlayerController>
         playerControls.Combat.Dash.performed += _ => Dash();
 
         startingMoveSpeed = moveSpeed;
+        questUIManager = FindObjectOfType<QuestUIManager>();
+        
     }
 
     private void OnEnable()
@@ -49,6 +54,13 @@ public class PlayerController : Singleton<PlayerController>
     private void Update()
     {
         PlayerInput();
+
+        if (nearbyLetter != null && Input.GetKeyDown(KeyCode.F))
+        {
+            Debug.Log("E key pressed - Collecting letter");
+            CollectLetter(nearbyLetter);
+            nearbyLetter.Collect();
+        }
     }
 
     private void FixedUpdate()
@@ -115,5 +127,51 @@ public class PlayerController : Singleton<PlayerController>
         myTrailRenderer.emitting = false;
         yield return new WaitForSeconds(dashCD);
         isDashing = false;
+    }
+
+    public void SetCurrentQuest(Dialogue quest)
+    {
+        Debug.Log("SetCurrentQuest called");
+        currentQuest = quest;
+        Debug.Log("Current quest set: " + (currentQuest != null ? currentQuest.questDescription : "null"));
+    }
+
+    public void CollectLetter(Letter letter)
+    {
+        Debug.Log("Collecting letter...");
+        if (currentQuest != null && currentQuest.questGiven)
+        {
+            currentQuest.lettersFound++;
+            string questSummary = currentQuest.GetQuestSummary();
+            Debug.Log($"Current quest summary: {questSummary}");
+            questUIManager.UpdateQuestSummary(questSummary);
+        }
+        else
+        {
+            Debug.LogWarning("Current quest is not active or questGiven is false.");
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Letter"))
+        {
+            Debug.Log("Entered letter trigger area");
+            nearbyLetter = other.GetComponent<Letter>();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Letter"))
+        {
+            Debug.Log("Exited letter trigger area");
+            nearbyLetter = null;
+        }
+    }
+
+    public void SetNearbyLetter(Letter letter)
+    {
+        nearbyLetter = letter;
     }
 }
