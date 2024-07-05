@@ -51,7 +51,14 @@ public class PlayerHealth : Singleton<PlayerHealth>
         }
     }
 
-    public void TakeDamage(int damageAmount, Transform hitTransform)
+	public void AddHealth(int healthBoost)
+	{
+		int health = Mathf.RoundToInt(currentHealth * maxHealth);
+		int val = health + healthBoost;
+		currentHealth = (val > maxHealth ? maxHealth : val / maxHealth);
+	}
+
+	public void TakeDamage(int damageAmount, Transform hitTransform)
     {
         if (!canTakeDamage) { return; }
 
