@@ -8,7 +8,7 @@ public class Pickup : MonoBehaviour
     {
         GoldCoin,
         StaminaGlobe,
-        HealthGlobe,
+        HealthGlobe
     }
 
     [SerializeField] private PickUpType pickUpType;
